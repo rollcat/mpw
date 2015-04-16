@@ -15,6 +15,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="generator" content="flask" />
+    {% block autorefresh %}
+      {% if autorefresh > 0 %}
+        <meta http-equiv="refresh" content="{{ autorefresh }}" />
+      {% endif %}
+    {% endblock %}
     <title>
       {% block title %}
         𝄞 {{ status_line }}
@@ -86,6 +91,19 @@
           {% endfor %}
         </tbody>
       </table>
+    {% endblock %}
+    {% block settings %}
+      <hr />
+      <div class="controls">
+        Quick settings!
+        <span>Autorefresh
+          {% if autorefresh > 0 %}
+            {{ button("/settings/autorefresh/0", "Disable") }}
+          {% else %}
+            {{ button("/settings/autorefresh/30", "Enable (30s)") }}
+          {% endif %}
+        </span>
+      </div>
     {% endblock %}
   </body>
 </html>

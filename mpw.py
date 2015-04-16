@@ -28,10 +28,12 @@ SYMBOLS = {
 
 app = flask.Flask(__name__)
 app.mpd = mpd.MPDClient()
+app.secret_key = "TBsBrO7ynAfc5C+Psr78gtNjVO71pALJNZ55fFIFaJR5YHjO"
 
 
 @app.before_request
 def mpd_connect():
+    flask.session.setdefault("autorefresh", 0)
     try:
         app.mpd.connect("localhost", 6600, timeout=1)
     except mpd.ConnectionError as e:
@@ -81,6 +83,7 @@ def make_breadcrumbs(path):
 @app.route("/")
 def index():
     context = get_current_context()
+    context["autorefresh"] = flask.session["autorefresh"]
     return flask.render_template("base.html", **context)
 
 
@@ -107,6 +110,7 @@ def browse(path=""):
     context["listing"] = listing
     context["path"] = path
     context["breadcrumbs"] = make_breadcrumbs(path)
+    context["autorefresh"] = flask.session["autorefresh"]
     return flask.render_template("browse.html", **context)
 
 
@@ -151,6 +155,12 @@ def library(action, path):
         app.mpd.play()
     else:
         pass  # ???
+    return flask.redirect(flask.url_for("index"))
+
+
+@app.route("/settings/autorefresh/<int:value>", methods=["POST"])
+def settings_autorefresh(value):
+    flask.session["autorefresh"] = int(value)
     return flask.redirect(flask.url_for("index"))
 
 
