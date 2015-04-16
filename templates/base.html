@@ -22,7 +22,7 @@
     {% endblock %}
     <title>
       {% block title %}
-        𝄞 {{ status_line }}
+        {{ status_line }}
       {% endblock %}
     </title>
     <style>
@@ -36,7 +36,7 @@
     </style>
   </head>
   <body>
-    <h1>𝄞 {{ status_line }}</h1>
+    <h1>{{ status_line }}</h1>
     {% block control %}
       <div class="playback controls">
         {{ button("/controls/prev", symbols.controls.prev) }}
@@ -95,7 +95,7 @@
         {{ button("/playlist/clear-old",
                   symbols.other.delete + " CLEAR OLD") }}
         {{ button("/playlist/shuffle",
-                  symbols.other.refresh + " SHUFFLE") }}
+                  symbols.other.shuffle + " SHUFFLE") }}
       </div>
     {% endblock %}
     {% block settings %}
@@ -107,6 +107,13 @@
             {{ button("/settings/autorefresh/0", "Disable") }}
           {% else %}
             {{ button("/settings/autorefresh/30", "Enable (30s)") }}
+          {% endif %}
+        </span>
+        <span>Symbols
+          {% if symbols_mode == "simple" %}
+            {{ button("/settings/symbols/fancy", "Go fancy") }}
+          {% else %}
+            {{ button("/settings/symbols/simple", "Go simple") }}
           {% endif %}
         </span>
       </div>

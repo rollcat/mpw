@@ -5,27 +5,56 @@ import uuid
 
 
 SYMBOLS = {
-    "volume": {
-        0: "🔇", 1: "🔈", 2: "🔉", 3: "🔊",
+    "fancy": {
+        "volume": {
+            0: "🔇", 1: "🔈", 2: "🔉", 3: "🔊",
+        },
+        "controls": {
+            "stop": "◼",
+            "play-pause": "⏯",
+            "play": "⏵",
+            "pause": "⏸",
+            "prev": "⏮",
+            "next": "⏭",
+            "fbackward": "⏪",
+            "fforward": "⏩",
+        },
+        "other": {
+            "refresh": "🔃",
+            "shuffle": "🔃",
+            "delete": "❌",
+            "add": "➕",
+            "song": "🎶",
+            "folder": "📂",
+            "logo": "𝄞",
+        },
     },
-    "controls": {
-        "stop": "◼",
-        "play-pause": "⏯",
-        "play": "⏵",
-        "pause": "⏸",
-        "prev": "⏮",
-        "next": "⏭",
-        "fbackward": "⏪",
-        "fforward": "⏩",
-    },
-    "other": {
-        "refresh": "🔃",
-        "delete": "❌",
-        "add": "➕",
-        "song": "🎶",
-        "folder": "📂",
+    "simple": {
+        "volume": {
+            0: "[muted]", 1: "[quiet]", 2: "[normal]", 3: "[loud]",
+        },
+        "controls": {
+            "stop": "[stop]",
+            "play-pause": "[play/pause]",
+            "play": "[play]",
+            "pause": "[pause]",
+            "prev": "[prev]",
+            "next": "[next]",
+            "fbackward": "[fast forward]",
+            "fforward": "[fast backward]",
+        },
+        "other": {
+            "refresh": "[refresh]",
+            "shuffle": "[shuffle]",
+            "delete": "[del]",
+            "add": "[add]",
+            "song": "[song]",
+            "folder": "[folder]",
+            "logo": "[music]",
+        },
     },
 }
+
 
 app = flask.Flask(__name__)
 app.mpd = mpd.MPDClient()
@@ -49,19 +78,24 @@ def mpd_disconnect(response):
     return response
 
 
+def get_symbols(default="simple"):
+    return SYMBOLS[flask.session.setdefault("symbols", default)]
+
+
 def rehydrate(item):
+    symbols = get_symbols()
     if "file" in item:
         item.setdefault("title", os.path.basename(item["file"]))
         item.setdefault("artist", "?")
         item.setdefault("type", "file")
         item.setdefault("path", item["file"])
         item.setdefault("label", item["title"])
-        item.setdefault("icon", SYMBOLS["other"]["song"])
+        item.setdefault("icon", symbols["other"]["song"])
     elif "directory" in item:
         item.setdefault("type", "directory")
         item.setdefault("path", item["directory"])
         item.setdefault("label", os.path.basename(item["path"]))
-        item.setdefault("icon", SYMBOLS["other"]["folder"])
+        item.setdefault("icon", symbols["other"]["folder"])
     return item
 
 
@@ -69,18 +103,24 @@ def get_current_context():
     playlist = list(map(rehydrate, app.mpd.playlistinfo()))
     song = rehydrate(app.mpd.currentsong())
     status = app.mpd.status()
-    state = SYMBOLS["controls"][status["state"]]
+    symbols = get_symbols()
+    state = symbols["controls"][status["state"]]
+    logo = symbols["other"]["logo"]
     status_line = (
-        "{state} {artist} - {title}".format(state=state, **song)
+        "{logo} {state} {artist} - {title}".format(
+            logo=logo, state=state, **song
+        )
         if status["state"] in {"play", "pause"} else
-        "{state} Not playing".format(state=state)
+        "{logo} {state} Not playing".format(logo=logo, state=state)
     )
     return {
         "playlist": playlist,
         "song": song,
         "status": status,
         "status_line": status_line,
-        "symbols": SYMBOLS,
+        "symbols": symbols,
+        "autorefresh": flask.session["autorefresh"],
+        "symbols_mode": flask.session["symbols"],
     }
 
 
@@ -99,7 +139,6 @@ def make_breadcrumbs(path):
 @app.route("/")
 def index():
     context = get_current_context()
-    context["autorefresh"] = flask.session["autorefresh"]
     return flask.render_template("base.html", **context)
 
 
@@ -111,7 +150,6 @@ def browse(path=""):
     context["listing"] = listing
     context["path"] = path
     context["breadcrumbs"] = make_breadcrumbs(path)
-    context["autorefresh"] = flask.session["autorefresh"]
     return flask.render_template("browse.html", **context)
 
 
@@ -176,9 +214,15 @@ def library(action, path):
     return flask.redirect(flask.url_for("index"))
 
 
-@app.route("/settings/autorefresh/<int:value>", methods=["POST"])
-def settings_autorefresh(value):
-    flask.session["autorefresh"] = int(value)
+@app.route("/settings/<string:key>/<string:value>", methods=["POST"])
+def settings(key, value):
+    schema = {
+        "autorefresh": int,
+        "symbols": str,
+    }
+    if key not in schema:
+        flask.abort(404)
+    flask.session[key] = schema[key](value)
     return flask.redirect(flask.url_for("index"))
 
 
