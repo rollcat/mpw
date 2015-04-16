@@ -91,6 +91,12 @@
           {% endfor %}
         </tbody>
       </table>
+      <div class="playback controls">
+        {{ button("/playlist/clear-old",
+                  symbols.other.delete + " CLEAR OLD") }}
+        {{ button("/playlist/shuffle",
+                  symbols.other.refresh + " SHUFFLE") }}
+      </div>
     {% endblock %}
     {% block settings %}
       <hr />

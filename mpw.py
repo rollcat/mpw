@@ -134,8 +134,25 @@ def controls(action):
     return flask.redirect(flask.url_for("index"))
 
 
+@app.route("/playlist/<action>", methods=["POST"])
+def playlist_action(action):
+    if action == "clear-old":
+        status = app.mpd.status()
+        if "song" in status:
+            song = int(status["song"])
+            for i in range(song):
+                app.mpd.delete(0)
+        else:
+            app.mpd.clear()
+    elif action == "shuffle":
+        app.mpd.shuffle()
+    else:
+        pass  # ???
+    return flask.redirect(flask.url_for("index"))
+
+
 @app.route("/playlist/<action>/<int:song>", methods=["POST"])
-def playlist(action, song):
+def playlist_action_song(action, song):
     if action == "play":
         app.mpd.play(song)
     elif action == "delete":
