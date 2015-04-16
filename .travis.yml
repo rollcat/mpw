@@ -1,0 +1,8 @@
+language: python
+python:
+  - "3.4"
+
+install: "pip install -r requirements.txt nose pep8"
+script: |
+  python -m pep8 *.py
+  python -m nose *.py

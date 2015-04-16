@@ -1,5 +1,7 @@
 # mpw - MPD on the Web
 
+![Build status](https://travis-ci.org/rollcat/mpw.svg)
+
 Small [MPD](http://www.musicpd.org/) web client.
 
 Recommended to only ever use on a trusted LAN and/or local machine.
