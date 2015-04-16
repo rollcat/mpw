@@ -1,0 +1,69 @@
+{% macro button(action, label) -%}
+  <div class="button">
+    <form action="{{ action }}" method="post">
+      <input value="{{ label }}" type="submit" />
+    </form>
+  </div>
+{%- endmacro %}
+
+<!doctype HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="flask" />
+    <title>
+      {% block title %}
+        𝄞 {{ status_line }}
+      {% endblock %}
+    </title>
+    <style>
+      #controls         { display: table; }
+      #controls .button { display: table-cell; }
+    </style>
+  </head>
+  <body>
+    <h1>𝄞 {{ status_line }}</h1>
+    {% block control %}
+      <div id="controls">
+        {{ button("/controls/prev", symbols.controls.prev) }}
+        {{ button("/controls/stop", symbols.controls.stop) }}
+        {{ button("/controls/play-pause", symbols.controls["play-pause"]) }}
+        {{ button("/controls/next", symbols.controls.next) }}
+      </div>
+    {% endblock %}
+    {% block browse %}
+    {% endblock %}
+    {% block playlist %}
+      <table>
+        <thead>
+          <td>Controls</td>
+          <td>Artist</td>
+          <td>Title</td>
+          <td>Album</td>
+          <td>Length</td>
+        </thead>
+        <tbody>
+          {% for item in playlist %}
+            <tr class="{{ loop.cycle('odd', 'even') }}"
+                {% if item.pos == status.song %} id="now" {% endif %}
+                >
+              <td>
+                <div class="controls">
+                  {{ button("/playlist/play/" + item.pos,
+                            symbols.controls.play) }}
+                  {{ button("/playlist/delete/" + item.pos,
+                            symbols.other.delete) }}
+                </div>
+              </td>
+              <td>{{ item.artist     }}</td>
+              <td>{{ item.title      }}</td>
+              <td>{{ item.album      }}</td>
+              <td>{{ time(item.time) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
+  </body>
+</html>
+{# -*- mode: jinja2; -*- #}
