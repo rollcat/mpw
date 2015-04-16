@@ -22,7 +22,7 @@ SYMBOLS = {
         "delete": "❌",
         "add": "➕",
         "song": "🎶",
-        "album": "📂",
+        "folder": "📂",
     },
 }
 
@@ -48,15 +48,31 @@ def mpd_disconnect(response):
     return response
 
 
+def rehydrate(item):
+    if "file" in item:
+        item.setdefault("title", os.path.basename(item["file"]))
+        item.setdefault("artist", "?")
+        item.setdefault("type", "file")
+        item.setdefault("path", item["file"])
+        item.setdefault("label", item["title"])
+        item.setdefault("icon", SYMBOLS["other"]["song"])
+    elif "directory" in item:
+        item.setdefault("type", "directory")
+        item.setdefault("path", item["directory"])
+        item.setdefault("label", os.path.basename(item["path"]))
+        item.setdefault("icon", SYMBOLS["other"]["folder"])
+    return item
+
+
 def get_current_context():
-    playlist = app.mpd.playlistinfo()
-    song = app.mpd.currentsong()
+    playlist = list(map(rehydrate, app.mpd.playlistinfo()))
+    song = rehydrate(app.mpd.currentsong())
     status = app.mpd.status()
-    icon = SYMBOLS["controls"][status["state"]]
+    state = SYMBOLS["controls"][status["state"]]
     status_line = (
-        "{icon} {artist} - {title}".format(icon=icon, **song)
-        if song else
-        "{icon} Not playing".format(icon=icon)
+        "{state} {artist} - {title}".format(state=state, **song)
+        if status["state"] in {"play", "pause"} else
+        "{state} Not playing".format(state=state)
     )
     return {
         "playlist": playlist,
@@ -64,7 +80,6 @@ def get_current_context():
         "status": status,
         "status_line": status_line,
         "symbols": SYMBOLS,
-        "icon": icon,
     }
 
 
@@ -90,22 +105,7 @@ def index():
 @app.route("/browse/")
 @app.route("/browse/<path:path>")
 def browse(path=""):
-    listing = app.mpd.lsinfo(path)
-    for item in listing:
-        item["type"] = (
-            "file" if "file" in item else
-            "directory" if "directory" in item else
-            None
-        )
-        assert item["type"]
-        item["path"] = item[item["type"]]
-        item["label"] = (item["title"] if item["type"] == "file"
-                         else os.path.basename(item["path"]))
-        item["icon"] = {
-            "file": SYMBOLS["other"]["song"],
-            "directory": SYMBOLS["other"]["album"],
-        }[item["type"]]
-
+    listing = list(map(rehydrate, app.mpd.lsinfo(path)))
     context = get_current_context()
     context["listing"] = listing
     context["path"] = path
