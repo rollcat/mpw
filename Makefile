@@ -23,7 +23,7 @@ test:
 	@ ${PYTHON} -m nose $(PY_MODULES) $(PY_FILES)
 
 run: test
-	@ ${PYTHON} -m mpw --debug
+	@ ${PYTHON} -m mpw --debug --port 8080
 
 run.uwsgi: test
 	@ uwsgi_python34 --http-socket :5000 --module mpw --callable app

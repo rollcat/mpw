@@ -187,5 +187,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--debug", action="store_const",
                            const=True, default=False)
+    argparser.add_argument("--host", default="localhost")
+    argparser.add_argument("--port", default=5000, type=int)
     args = argparser.parse_args()
-    app.run(debug=args.debug)
+    app.run(debug=args.debug, host=args.host, port=args.port)
