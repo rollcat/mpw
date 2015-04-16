@@ -5,7 +5,11 @@
     </form>
   </div>
 {%- endmacro %}
-
+{% macro time(i) -%}{{
+  (i|int / 60)|int
+  }}:{{
+  "%02d"|format((i|int % 60))
+  }}{%- endmacro %}
 <!doctype HTML>
 <html>
   <head>
@@ -17,21 +21,23 @@
       {% endblock %}
     </title>
     <style>
-      #controls         { display: table; }
-      #controls .button { display: table-cell; }
+      .controls         { display: table; }
+      .controls .button { display: table-cell; }
+      thead tr td       { font-weight: bold; }
+      tr.odd            { background-color: #fafafa; }
+      tr#now            { background-color: #dadada; }
     </style>
   </head>
   <body>
     <h1>𝄞 {{ status_line }}</h1>
     {% block control %}
-      <div id="controls">
+      <div class="controls">
+        {{ button("/controls/refresh", symbols.other.refresh) }}
         {{ button("/controls/prev", symbols.controls.prev) }}
         {{ button("/controls/stop", symbols.controls.stop) }}
         {{ button("/controls/play-pause", symbols.controls["play-pause"]) }}
         {{ button("/controls/next", symbols.controls.next) }}
       </div>
-    {% endblock %}
-    {% block browse %}
     {% endblock %}
     {% block playlist %}
       <table>

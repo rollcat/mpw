@@ -16,6 +16,10 @@ SYMBOLS = {
         "fbackward": "⏪",
         "fforward": "⏩",
     },
+    "other": {
+        "refresh": "🔃",
+        "delete": "❌",
+    },
 }
 
 app = flask.Flask(__name__)
@@ -55,6 +59,7 @@ def index():
         "status": status,
         "status_line": status_line,
         "symbols": SYMBOLS,
+        "icon": icon,
     }
     return flask.render_template("base.html", **context)
 
@@ -74,6 +79,17 @@ def controls(action):
         app.mpd.previous()
     elif action == "next":
         app.mpd.next()
+    else:
+        pass  # ???
+    return flask.redirect(flask.url_for("index"))
+
+
+@app.route("/playlist/<action>/<int:song>", methods=["POST"])
+def playlist(action, song):
+    if action == "play":
+        app.mpd.play(song)
+    elif action == "delete":
+        app.mpd.delete(song)
     else:
         pass  # ???
     return flask.redirect(flask.url_for("index"))
