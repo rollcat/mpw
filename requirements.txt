@@ -1,0 +1,3 @@
+Flask
+IPython
+python-mpd2
