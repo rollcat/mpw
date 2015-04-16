@@ -25,6 +25,9 @@ test:
 run: test
 	@ ${PYTHON} -m mpw --debug
 
+run.uwsgi: test
+	@ uwsgi_python34 --http-socket :5000 --module mpw --callable app
+
 shell:
 	@ ${PYTHON} -m IPython
 
