@@ -23,7 +23,7 @@ test:
 	@ ${PYTHON} -m nose $(PY_MODULES) $(PY_FILES)
 
 run: test
-	@ ${PYTHON} -m mpw
+	@ ${PYTHON} -m mpw --debug
 
 shell:
 	@ ${PYTHON} -m IPython

@@ -183,4 +183,9 @@ def settings_autorefresh(value):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import argparse
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--debug", action="store_const",
+                           const=True, default=False)
+    args = argparser.parse_args()
+    app.run(debug=args.debug)
