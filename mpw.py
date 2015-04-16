@@ -66,6 +66,18 @@ def get_current_context():
     }
 
 
+def make_breadcrumbs(path):
+    breadcrumbs = [{"label": "/", "path": "/"}]
+    path_elems = filter(None, path.strip("/").split("/"))
+    for elem in path_elems:
+        breadcrumbs.append({
+            "label": elem,
+            "path": os.path.join(breadcrumbs[-1]["path"], elem)
+        })
+    breadcrumbs.pop(0)
+    return breadcrumbs
+
+
 @app.route("/")
 def index():
     context = get_current_context()
@@ -93,6 +105,8 @@ def browse(path=""):
 
     context = get_current_context()
     context["listing"] = listing
+    context["path"] = path
+    context["breadcrumbs"] = make_breadcrumbs(path)
     return flask.render_template("browse.html", **context)
 
 

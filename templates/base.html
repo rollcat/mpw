@@ -21,25 +21,37 @@
       {% endblock %}
     </title>
     <style>
+      .playback         { padding: 10px; }
       .controls         { display: table; }
       .controls .button { display: table-cell; }
       thead tr td       { font-weight: bold; }
       tr.odd            { background-color: #fafafa; }
       tr#now            { background-color: #dadada; }
+      tr:hover          { color: #444; }
     </style>
   </head>
   <body>
     <h1>𝄞 {{ status_line }}</h1>
-    <div>
-      <a href="/browse/">Browse all songs</a>
-    </div>
     {% block control %}
-      <div class="controls">
-        {{ button("/controls/refresh", symbols.other.refresh) }}
+      <div class="playback controls">
         {{ button("/controls/prev", symbols.controls.prev) }}
         {{ button("/controls/stop", symbols.controls.stop) }}
         {{ button("/controls/play-pause", symbols.controls["play-pause"]) }}
         {{ button("/controls/next", symbols.controls.next) }}
+      </div>
+    {% endblock %}
+    {% block modes %}
+      <div class="playback">
+        <a href="/">Now Playing</a> ::
+        <a href="/browse/">Browse Songs</a>
+        <span class="breadcrumbs">
+          {% for item in breadcrumbs %}
+            /
+            <a href="/browse{{ item.path }}">
+              {{ item.label }}
+            </a>
+          {% endfor %}
+        </span>
       </div>
     {% endblock %}
     {% block browse %}

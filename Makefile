@@ -20,7 +20,7 @@ pre-commit: autofmt .gitignore test
 
 test:
 	@ ${PYTHON} -m pep8 $(PY_FILES)
-	@ ${PYTHON} -m nose $(PY_MODULES)
+	@ ${PYTHON} -m nose $(PY_MODULES) $(PY_FILES)
 
 run: test
 	@ ${PYTHON} -m mpw
