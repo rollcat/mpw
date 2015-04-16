@@ -1,5 +1,6 @@
 import flask
 import mpd
+import os
 
 
 SYMBOLS = {
@@ -19,6 +20,9 @@ SYMBOLS = {
     "other": {
         "refresh": "🔃",
         "delete": "❌",
+        "add": "➕",
+        "song": "🎶",
+        "album": "📂",
     },
 }
 
@@ -42,8 +46,7 @@ def mpd_disconnect(response):
     return response
 
 
-@app.route("/")
-def index():
+def get_current_context():
     playlist = app.mpd.playlistinfo()
     song = app.mpd.currentsong()
     status = app.mpd.status()
@@ -53,7 +56,7 @@ def index():
         if song else
         "{icon} Not playing".format(icon=icon)
     )
-    context = {
+    return {
         "playlist": playlist,
         "song": song,
         "status": status,
@@ -61,7 +64,36 @@ def index():
         "symbols": SYMBOLS,
         "icon": icon,
     }
+
+
+@app.route("/")
+def index():
+    context = get_current_context()
     return flask.render_template("base.html", **context)
+
+
+@app.route("/browse/")
+@app.route("/browse/<path:path>")
+def browse(path=""):
+    listing = app.mpd.lsinfo(path)
+    for item in listing:
+        item["type"] = (
+            "file" if "file" in item else
+            "directory" if "directory" in item else
+            None
+        )
+        assert item["type"]
+        item["path"] = item[item["type"]]
+        item["label"] = (item["title"] if item["type"] == "file"
+                         else os.path.basename(item["path"]))
+        item["icon"] = {
+            "file": SYMBOLS["other"]["song"],
+            "directory": SYMBOLS["other"]["album"],
+        }[item["type"]]
+
+    context = get_current_context()
+    context["listing"] = listing
+    return flask.render_template("browse.html", **context)
 
 
 @app.route("/controls/<action>", methods=["POST"])
@@ -90,6 +122,19 @@ def playlist(action, song):
         app.mpd.play(song)
     elif action == "delete":
         app.mpd.delete(song)
+    else:
+        pass  # ???
+    return flask.redirect(flask.url_for("index"))
+
+
+@app.route("/library/<action>/<path:path>", methods=["POST"])
+def library(action, path):
+    if action == "add":
+        app.mpd.add(path)
+    elif action == "replace-play":
+        app.mpd.clear()
+        app.mpd.add(path)
+        app.mpd.play()
     else:
         pass  # ???
     return flask.redirect(flask.url_for("index"))

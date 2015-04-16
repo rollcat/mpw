@@ -30,6 +30,9 @@
   </head>
   <body>
     <h1>𝄞 {{ status_line }}</h1>
+    <div>
+      <a href="/browse/">Browse all songs</a>
+    </div>
     {% block control %}
       <div class="controls">
         {{ button("/controls/refresh", symbols.other.refresh) }}
@@ -38,6 +41,8 @@
         {{ button("/controls/play-pause", symbols.controls["play-pause"]) }}
         {{ button("/controls/next", symbols.controls.next) }}
       </div>
+    {% endblock %}
+    {% block browse %}
     {% endblock %}
     {% block playlist %}
       <table>

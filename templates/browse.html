@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{# don't show playlist #}
+{% block playlist %}
+{% endblock %}
+{% block browse %}
+  <table>
+    <thead>
+      <td>Controls</td>
+      <td></td>
+      <td>Name</td>
+    </thead>
+    <tbody>
+      {% for item in listing %}
+        <tr class="{{ loop.cycle('odd', 'even') }}">
+          <td>
+            <div class="controls">
+              {{ button("/library/add/" + item.path,
+                        symbols.other.add) }}
+              {{ button("/library/replace-play/" + item.path,
+                        symbols.controls.play) }}
+            </div>
+          </td>
+          <td>{{ item.icon }}</td>
+          <td>
+            {% if item.type == "directory" %}
+              <a href="/browse/{{ item.path }}">
+                {{ item.label }}
+              </a>
+            {% else %}
+              {{ item.label }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{# -*- mode: jinja2; -*- #}
