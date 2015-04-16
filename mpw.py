@@ -1,6 +1,7 @@
 import flask
 import mpd
 import os
+import uuid
 
 
 SYMBOLS = {
@@ -28,7 +29,7 @@ SYMBOLS = {
 
 app = flask.Flask(__name__)
 app.mpd = mpd.MPDClient()
-app.secret_key = "TBsBrO7ynAfc5C+Psr78gtNjVO71pALJNZ55fFIFaJR5YHjO"
+app.secret_key = hex(uuid.getnode())  # WARNING: **VERY INSECURE**
 
 
 @app.before_request
