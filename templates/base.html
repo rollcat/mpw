@@ -1,7 +1,8 @@
-{% macro button(action, label) -%}
+{% macro button(action, label, id=None) -%}
   <div class="button">
     <form action="{{ action }}" method="post">
-      <input value="{{ label }}" type="submit" />
+      <input id="{{ id or (action | slugify) }}"
+             value="{{ label }}" type="submit" />
     </form>
   </div>
 {%- endmacro %}
@@ -26,6 +27,9 @@
         {{ status_line }}
       {% endblock %}
     </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/keyboard.js">
+    </script>
     <style>
       .playback         { padding: 10px; }
       .controls         { display: table; }
@@ -34,6 +38,8 @@
       tr.odd            { background-color: #fafafa; }
       tr#now            { background-color: #dadada; }
       tr:hover          { color: #444; }
+      .cheat            { background-color: #fafafa; }
+      .cheat code       { background-color: #dadada; }
     </style>
   </head>
   <body>
@@ -105,18 +111,44 @@
         Quick settings!
         <span>Autorefresh
           {% if autorefresh > 0 %}
-            {{ button("/settings/autorefresh/0", "Disable") }}
+            {{ button("/settings/autorefresh/0", "Disable",
+                      "settings-autorefresh") }}
           {% else %}
-            {{ button("/settings/autorefresh/30", "Enable (30s)") }}
+            {{ button("/settings/autorefresh/30", "Enable (30s)",
+                      "settings-autorefresh") }}
           {% endif %}
         </span>
         <span>Symbols
           {% if symbols_mode == "simple" %}
-            {{ button("/settings/symbols/fancy", "Go fancy") }}
+            {{ button("/settings/symbols/fancy", "Go fancy",
+                      "settings-fancy") }}
           {% else %}
-            {{ button("/settings/symbols/simple", "Go simple") }}
+            {{ button("/settings/symbols/simple", "Go simple"
+                      "settings-fancy") }}
           {% endif %}
         </span>
+      </div>
+    {% endblock %}
+    {% block cheats %}
+      <hr />
+      <div class="cheats">
+        Cheats!
+        {% set cheats = [
+        ("p", "Pause"),
+        ("s", "Stop"),
+        ("j", "bottom"),
+        ("k", "top"),
+        ("h", "previous"),
+        ("l", "next"),
+        ("x", "clear old"),
+        ("gp", "Go Playlist"),
+        ("gb", "Go Browse"),
+        ("ga", "Go Autorefresh"),
+        ("gf", "Go Fancy"),
+        ] %}
+        {% for key, label in cheats %}
+          <span class="cheat"><code>{{ key }}</code> {{ label }}</span>
+        {% endfor %}
       </div>
     {% endblock %}
   </body>

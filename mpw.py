@@ -1,6 +1,7 @@
 import flask
 import mpd
 import os
+import re
 import uuid
 
 
@@ -233,6 +234,24 @@ def favicon():
         "favicon.ico",
         mimetype="image/vnd.microsoft.icon",
     )
+
+
+@app.route("/keyboard.js")
+def keyboard_js():
+    return flask.send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "keyboard.js",
+        mimetype="application/javascript",
+    )
+
+
+@app.template_filter()
+def slugify(s):
+    s = s.lower()
+    s = re.sub(r"[^\w\d\-]", "-", s)
+    s = re.sub("-+", "-", s)
+    s = re.sub("(^-)|(-$)", "", s)
+    return s
 
 
 if __name__ == "__main__":

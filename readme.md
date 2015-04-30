@@ -6,10 +6,13 @@ Small [MPD](http://www.musicpd.org/) web client.
 
 Recommended to only ever use on a trusted LAN and/or local machine.
 
-Since it doesn't use any Javascript, or any other fancy advanced HTML
-features, it will probably work on every single web browser in the
-world. Tested on [Firefox](https://www.mozilla.org/en-US/firefox/),
+Since it doesn't use any fancy advanced HTML features, it will
+probably work on every single web browser in the world. Tested on
+[Firefox](https://www.mozilla.org/en-US/firefox/),
 [elinks](http://elinks.or.cz/), [dillo](http://www.dillo.org/).
+
+It uses some simple JS to enable keyboard shortcuts, and a tiny bit of
+CSS to make things like playlists more readable.
 
 Tech stack:
 
