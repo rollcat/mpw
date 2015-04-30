@@ -16,8 +16,24 @@
       <td>Name</td>
     </thead>
     <tbody>
+      {% if path %}
+        <tr class="odd">
+          <td>
+            <div class="controls">
+              {{ button("/library/add/" + path,
+              symbols.other.add) }}
+              {{ button("/library/replace-play/" + path,
+              symbols.controls.play) }}
+            </div>
+          </td>
+          <td>{{ symbols.other.folder }}</td>
+          <td>
+            {{ path }}
+          </td>
+        </tr>
+      {% endif %}
       {% for item in listing %}
-        <tr class="{{ loop.cycle('odd', 'even') }}">
+        <tr class="{{ loop.cycle('even', 'odd') }}">
           <td>
             <div class="controls">
               {{ button("/library/add/" + item.path,
