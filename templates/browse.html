@@ -35,12 +35,14 @@
       {% for item in listing %}
         <tr class="{{ loop.cycle('even', 'odd') }}">
           <td>
-            <div class="controls">
-              {{ button("/library/add/" + item.path,
-                        symbols.other.add) }}
-              {{ button("/library/replace-play/" + item.path,
-                        symbols.controls.play) }}
-            </div>
+            {% if item.path is defined %}
+              <div class="controls">
+                {{ button("/library/add/" + item.path,
+                          symbols.other.add) }}
+                {{ button("/library/replace-play/" + item.path,
+                          symbols.controls.play) }}
+              </div>
+            {% endif %}
           </td>
           <td>{{ item.icon }}</td>
           <td>

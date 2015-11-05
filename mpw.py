@@ -97,6 +97,8 @@ def rehydrate(item):
         item.setdefault("path", item["directory"])
         item.setdefault("label", os.path.basename(item["path"]))
         item.setdefault("icon", symbols["other"]["folder"])
+    else:
+        return {"icon": "?", "label": item}
     return item
 
 
