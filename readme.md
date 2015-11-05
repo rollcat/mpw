@@ -1,6 +1,6 @@
 # mpw - MPD on the Web
 
-![Build status](https://travis-ci.org/rollcat/mpw.svg)
+[![Build status](https://travis-ci.org/rollcat/mpw.svg)](https://travis-ci.org/rollcat/mpw)
 
 Small [MPD](http://www.musicpd.org/) web client.
 
