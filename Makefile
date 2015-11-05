@@ -23,10 +23,14 @@ test:
 	@ ${PYTHON} -m nose $(PY_MODULES) $(PY_FILES)
 
 run: test
-	@ ${PYTHON} -m mpw --debug --port 8080
+	@ ${PYTHON} -m mpw --debug --port 8082
 
 run.uwsgi: test
-	@ uwsgi_python34 --http-socket :5000 --module mpw --callable app
+	@ uwsgi_python34 \
+		--http-socket :8082 \
+		--master \
+		--threads 2 \
+		--module mpw --callable app
 
 shell:
 	@ ${PYTHON} -m IPython
