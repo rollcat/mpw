@@ -63,6 +63,9 @@ function key_go(event) {
 $(document).ready(function() {
     handle_state = key_main;
     $(document).keydown(function (event) {
+        if (event.key === undefined) {
+            event.key = String.fromCharCode(event.keyCode + 32);
+        }
         handle_state(event);
     });
 });
