@@ -9,7 +9,8 @@ Recommended to only ever use on a trusted LAN and/or local machine.
 Since it doesn't use any fancy advanced HTML features, it will
 probably work on every single web browser in the world. Tested on
 [Firefox](https://www.mozilla.org/en-US/firefox/),
-[elinks](http://elinks.or.cz/), [dillo](http://www.dillo.org/).
+[elinks](http://elinks.or.cz/), [dillo](http://www.dillo.org/),
+[surf](http://surf.suckless.org/).
 
 It uses some simple JS to enable keyboard shortcuts, and a tiny bit of
 CSS to make things like playlists more readable.
